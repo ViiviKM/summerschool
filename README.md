@@ -25,4 +25,4 @@ Versions from previous years can be found in tags.
 ## Notes
 - [x] Have fun!
 
-# General comment to self
+General comment to self
