@@ -48,10 +48,10 @@ contains
     v3%z = v1%z - v2%z
   end function vector_difference
 
-  function vector_product(v1,v2) result(v3)
+  function vector_product(v1,v2) result(l)
     type(vector_t), intent(in) :: v1,v2
-    type(vector_t) :: v3
-    v3=v1%x*v2%x + v1%y*v2%y + v1%z*v2%z
+    real(REAL64) :: l
+    l=v1%x*v2%x + v1%y*v2%y + v1%z*v2%z
   end function vector_product
   
   function vector_cross_product(v1,v2) result(v3)
@@ -62,10 +62,10 @@ contains
     v3%z=v1%x*v2%y-v1%y*v2%x    
   end function vector_cross_product
 
-  function vector_norm(v) result(r)
+  function vector_norm(v) result(l)
     type(vector_t) :: v
-    real(REAL64) :: r
-    r = sqrt(v%x**2 + v%y**2 + v%z**2))
+    real(REAL64) :: l
+    l = sqrt(v%x**2 + v%y**2 + v%z**2)
   end function vector_norm
   
   
