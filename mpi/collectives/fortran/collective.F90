@@ -28,11 +28,15 @@ program coll_exer
   ! TODO: use a single collective communication call (and maybe prepare
   !       some parameters for the call)
 
-  call mpi_bcast(sendbuf, 2*n_mpi_tasks, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
-
+  !call mpi_bcast(sendbuf, 2*n_mpi_tasks, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+  call mpi_scatter(sendbuf, 2, MPI_INTEGER, recvbuf, &
+       2, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+       
+  
   ! Print data that was received
   ! TODO: add correct buffer
-  call print_buffers(sendbuf)
+  !call print_buffers(sendbuf)
+  call print_buffers(recvbuf)
 
   call mpi_finalize(ierr)
 
