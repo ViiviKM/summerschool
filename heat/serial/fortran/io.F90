@@ -46,7 +46,7 @@ contains
 
     type(field), intent(out) :: field0
     character(len=85), intent(in) :: filename
-    real, dimension(:,:), allocatable :: array
+    ! real, dimension(:,:), allocatable :: array
 
     integer :: nx, ny, i
     character(len=2) :: dummy
@@ -67,7 +67,7 @@ contains
     ! also a halo region (one layer of extra space in all directions which
     ! is used as boundary condition).
 
-    allocate(array(nx+2,ny+2))
+    allocate(field0%data(0:field0%nx+1,0:field0%ny+1))
 
     ! Read the data
     do i=1, nx
