@@ -7,6 +7,8 @@ program coll_exer
   integer :: ntasks, rank, ierr
   integer, dimension(2*n_mpi_tasks) :: sendbuf, recvbuf
   integer, dimension(2*n_mpi_tasks**2) :: printbuf
+  
+  integer, dimension(n_mpi_tasks) :: displs, scounts
 
   call mpi_init(ierr)
   call mpi_comm_size(MPI_COMM_WORLD, ntasks, ierr)
@@ -29,8 +31,14 @@ program coll_exer
   !       some parameters for the call)
 
   !call mpi_bcast(sendbuf, 2*n_mpi_tasks, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
-  call mpi_scatter(sendbuf, 2, MPI_INTEGER, recvbuf, &
-       2, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+  !call mpi_scatter(sendbuf, 2, MPI_INTEGER, recvbuf, &
+  !     2, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+
+  scounts(1:4) = [1,1,2,4]
+  displs(1:4) = [0,1,2,4]
+  
+  call mpi_gatherv(sendbuf, scounts(rank+1), MPI_INTEGER, recvbuf, &
+       scounts, displs, MPI_INTEGER, 1, MPI_COMM_WORLD, ierr)
        
   
   ! Print data that was received
