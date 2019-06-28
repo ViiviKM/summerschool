@@ -22,19 +22,26 @@ program basic
   t0 = mpi_wtime()
 
   ! TODO: Send and receive as defined in the assignment
-  if (myid < ntasks-1) then
-
-     call mpi_send(message, msgsize, MPI_INTEGER, myid+1, myid+1,&
-          MPI_COMM_WORLD, rc)
+  if (( 0 < myid) .and. (myid < ntasks-1)) then
+     call mpi_sendrecv(message, msgsize, MPI_INTEGER, myid+1,myid+1, &
+          receiveBuffer, msgsize, MPI_INTEGER, myid-1,myid, &
+          MPI_COMM_WORLD,status, rc)
      write(*,'(A10,I3,A20,I8,A,I3,A,I3)') 'Sender: ', myid, &
           ' Sent elements: ', msgsize, &
           '. Tag: ', myid+1, '. Receiver: ', myid+1
   end if
+   
+  if (myid == 0) then
+     call mpi_send(message, msgsize, MPI_INTEGER,myid+1,myid+1,&
+          MPI_COMM_WORLD, rc)
+     write(*,'(A10,I3,A,I3)') 'Sender: ', myid, &
+          ' Sent elements: ',  msgsize, &
+          '. Tag: ', myid+1, '. Receiver: ', myid+1
+  end if
 
-  if (myid > 0) then
-
-     call mpi_recv(receiveBuffer, msgsize, MPI_INTEGER, myid-1, myid, &
-          MPI_COMM_WORLD, status, rc)
+  if (myid == ntasks-1) then
+     call mpi_recv(receiveBuffer, msgsize, MPI_INTEGER, myid-1,&
+           myid, MPI_COMM_WORLD,status, rc)
      write(*,'(A10,I3,A,I3)') 'Receiver: ', myid, &
           ' First element: ', receiveBuffer(1)
   end if
