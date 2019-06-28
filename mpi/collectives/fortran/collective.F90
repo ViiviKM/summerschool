@@ -21,16 +21,18 @@ program coll_exer
 
   ! Initialize message buffers
   call init_buffers
-
+  
   ! Print data that will be sent
   call print_buffers(sendbuf)
 
   ! TODO: use a single collective communication call (and maybe prepare
   !       some parameters for the call)
 
+  call mpi_bcast(sendbuf, 2*n_mpi_tasks, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+
   ! Print data that was received
   ! TODO: add correct buffer
-  call print_buffers(...)
+  call print_buffers(sendbuf)
 
   call mpi_finalize(ierr)
 
