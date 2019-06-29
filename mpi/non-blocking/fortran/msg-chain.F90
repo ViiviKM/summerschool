@@ -1,5 +1,5 @@
 program basic
-  use mpi_f08
+  use mpi
   use iso_fortran_env, only : REAL64
 
   implicit none
@@ -8,7 +8,7 @@ program basic
   integer :: message(msgsize)
   integer :: receiveBuffer(msgsize)
   type(mpi_status) :: status(2)
-
+  
   real(REAL64) :: t0, t1
 
   integer :: source, destination
@@ -39,19 +39,27 @@ program basic
 
   ! TODO: Implement the message passing using non-blocking
   !       sends and receives
+  if (myid < ntasks-1) then
+     call mpi_send(message, msgsize, MPI_INTEGER, myid+1,&
+          1, mpi_comm_world, rc)
+  else if (myid > 0) then
+     call mpi_recv(receiveBuffer, msgsize, MPI_INTEGER, myid-1,&
+          1, mpi_comm_world, status(1), rc)
+  end if
+       
 
   write(*,'(A10,I3,A20,I8,A,I3,A,I3)') 'Sender: ', myid, &
-       ' Sent elements: ', size, &
+       ' Sent elements: ', msgsize, &
        '. Tag: ', myid + 1, '. Receiver: ', destination
 
   ! TODO: Add here a synchronization call so that you can be sure
   !       that the message has been received
 
-  call mpi_get_count(status(1), MPI_INTEGER, count, rc)
-  write(*,'(A10,I3,A20,I8,A,I3,A,I3)') 'Receiver: ', myid, &
-       'received elements: ', count, &
-       '. Tag: ', status(1)%MPI_TAG, &
-       '. Sender:   ', status(1)%MPI_SOURCE
+  !call mpi_get_count(status(1), MPI_INTEGER, count, rc)
+  !write(*,'(A10,I3,A20,I8,A,I3,A,I3)') 'Receiver: ', myid, &
+  !     'received elements: ', count, &
+  !     '. Tag: ', status(1)%MPI_TAG, &
+  !     '. Sender:   ', status(1)%MPI_SOURCE
 
   ! Finalize measuring the time and print it out
   t1 = mpi_wtime()
