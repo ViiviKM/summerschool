@@ -1,5 +1,5 @@
 program pario
-  use mpi_f08
+  use mpi
   use, intrinsic :: iso_fortran_env, only : error_unit, output_unit
   implicit none
 
@@ -42,6 +42,16 @@ contains
     ! TODO: Implement a function that will read the data from a file so that
     !       a single process does the file io. Use rank WRITER_ID as the io rank
 
+    if (my_id == writer_id) then 
+       open(10, file='data.dat', status='old', form='unformatted', &
+            access = 'stream')
+       read(10, pos=1) fullvector
+       close(10)
+    end if
+
+    call mpi_scatter(fullvector, localsize, mpi_integer, localvector, &
+         localsize, mpi_integer, writer_id, mpi_comm_world, rc)
+    
   end subroutine single_reader
 
   subroutine ordered_print

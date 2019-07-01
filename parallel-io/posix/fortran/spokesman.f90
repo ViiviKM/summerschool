@@ -1,5 +1,5 @@
 program pario
-  use mpi_f08
+  use mpi
   use, intrinsic :: iso_fortran_env, only : error_unit, output_unit
   implicit none
 
@@ -7,6 +7,8 @@ program pario
   integer :: rc, my_id, ntasks, localsize, i
   integer, dimension(:), allocatable :: localvector
   integer, dimension(datasize) :: fullvector
+  integer :: status(mpi_status_size, datasize)
+  !character :: fname = 'data.dat'
 
   call mpi_init(rc)
   call mpi_comm_size(mpi_comm_world, ntasks, rc)
@@ -39,7 +41,27 @@ contains
 
     ! TODO: Implement a function that writers the whole array of elements
     !       to a file so that single process is responsible for the file io
+    
+    
+    
+    if (my_id == writer_id) then
+       do i = 1, ntasks -1
+          call mpi_recv(fullvector(i*localvector), localsize, mpi_integer, i, &
+           1, mpi_comm_world, status, rc)
+       end do
+       
+       open(10, file="data.dat", status='replace', &
+            form='unformatted', access="stream")
+       write(10, pos=1) fullvector
+       close(10)
+       write(output_unit,'(A,I0,A)') 'Wrote ', size(fullvector), &
+            & ' elements to file singlewriter.dat'
 
+    else
+       call mpi_send(localvector, localsize, mpi_integer, 0, &
+            1, mpi_comm_world, rc)
+    end if
+    
   end subroutine single_writer
 
 end program pario
