@@ -42,24 +42,16 @@ contains
     ! TODO: Implement a function that writers the whole array of elements
     !       to a file so that single process is responsible for the file io
     
+    call mpi_gather(localvector, localsize, mpi_integer, fullvector, &
+         localsize, mpi_integer, writer_id, mpi_comm_world, rc)
     
-    
-    if (my_id == writer_id) then
-       do i = 1, ntasks -1
-          call mpi_recv(fullvector(i*localvector), localsize, mpi_integer, i, &
-           1, mpi_comm_world, status, rc)
-       end do
-       
+    if (my_id == writer_id) then       
        open(10, file="data.dat", status='replace', &
             form='unformatted', access="stream")
        write(10, pos=1) fullvector
        close(10)
        write(output_unit,'(A,I0,A)') 'Wrote ', size(fullvector), &
             & ' elements to file singlewriter.dat'
-
-    else
-       call mpi_send(localvector, localsize, mpi_integer, 0, &
-            1, mpi_comm_world, rc)
     end if
     
   end subroutine single_writer
